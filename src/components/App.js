@@ -2,9 +2,9 @@
 
 import React from 'react'
 import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
-import * as Auth from './Auth'
-import Union from '../images/Union.png'
-import Error from '../images/Error.png'
+import * as Auth from '../utils/Auth'
+import union from '../images/Union.png'
+import error from '../images/Error.png'
 
 import api from '../utils/api.js'
 import Header from './Header'
@@ -61,6 +61,18 @@ function App(props) {
       .catch((err) => {
         console.log(err);
       })
+  }, [])
+
+  React.useEffect(() => {
+    const closeByEscape = (e) => {
+      if (e.key === 'Escape') {
+        closeAllPopups();
+      }
+    }
+
+    document.addEventListener('keydown', closeByEscape)
+
+    return () => document.removeEventListener('keydown', closeByEscape)
   }, [])
 
   const handleCardLike = (card) => {
@@ -137,8 +149,8 @@ function App(props) {
 
   const handleUpdateUser = (data) => {
     api.editProfileINfo(data)
-      .then(() => {
-        setCurrentUser({ ...currentUser, name: data.name, about: data.about })
+      .then((useData) => {
+        setCurrentUser(useData)
         setIsEditProfilePopupOpen(false)
       })
       .catch((err) => {
@@ -163,34 +175,32 @@ function App(props) {
 
   }
 
-  const openRegisterSuccessPopup = () => {
-    setIsSuccessPopupOpened(true)
-  }
-  const openRegisterErrorPopup = () => {
-    setIsErrorPopupOpened(true)
-  }
 
   const tokenCheck = () => {
     // если у пользователя есть токен в localStorage,
     // эта функция проверит валидность токена 
     const token = localStorage.getItem('token');
-    
+
     if (token) {
       //console.log(token)
       // проверим токен
-      Auth.getContent(token).then((res) => {
-        if (res) {
-          
-          // здесь можем получить данные пользователя!
-          setUserData({
-            username: res.username,
-            email: res.email
-          })
-          // поместим их в стейт внутри App.js
-          setIsLogged(true)
-          history.push("/");
-        }
-      });
+      Auth.getContent(token)
+        .then((res) => {
+          if (res) {
+
+            // здесь можем получить данные пользователя!
+            setUserData({
+              username: res.username,
+              email: res.email
+            })
+            // поместим их в стейт внутри App.js
+            setIsLogged(true)
+            history.push("/");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   }
 
@@ -198,19 +208,24 @@ function App(props) {
     e.preventDefault();
     setIsLogged(true)
   }
-  tokenCheck()
+
+
+  React.useEffect(() => {
+    tokenCheck()
+  }, [])
+  
   const MainComponent = () => {
-    
-    const signOut = () =>{
-      
+
+    const signOut = () => {
+
       localStorage.removeItem('token');
       setIsLogged(false)
       history.push('/sign-in');
     }
 
-    
+
     return (<>
-      <Header signOut={signOut} buttonText="Выйти" link="/sign-up" userEmail={userData.email}/>
+      <Header signOut={signOut} buttonText="Выйти" link="/sign-up" userEmail={userData.email} />
       <Main cards={cards} onCardLike={handleCardLike} onCardDelete={handleCardDelete} onCardClick={handleCardClick} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onEditAvatar={handleEditAvatarClick} />
       <Footer />
 
@@ -222,6 +237,42 @@ function App(props) {
     </>)
   }
 
+  const handleSubmitLogin = (e, email, password, setEmail, setPassword) => {
+    e.preventDefault()
+    Auth.authorise(email, password)
+      .then((data) => {
+        if (data.token) {
+          setUserData({ email, password })
+          setEmail('')
+          setPassword('')
+          handleLogin(e)
+
+          history.push('/');
+        }
+
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+
+  }
+
+  const handleSubmitRegister = (e, email, password) => {
+    e.preventDefault()
+    Auth.register(email, password)
+      .then((data) => {
+        if (data) {
+          setIsSuccessPopupOpened(true)
+          history.push('/sign-in')
+        } else {
+          setIsErrorPopupOpened(true)
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
 
   return (
@@ -230,14 +281,14 @@ function App(props) {
       <div className="App">
 
         <div className="page">
-          <InfoTooltip title="Что-то пошло не так! Попробуйте ещё раз." name="modal" isOpen={isErrorPopupOpened} onClose={closeAllPopups} image={Error} />
-          <InfoTooltip title="Вы успешно зарегистрировались!" name="modal" isOpen={isSuccessPopupOpened} onClose={closeAllPopups} image={Union} />
+          <InfoTooltip title="Что-то пошло не так! Попробуйте ещё раз." name="modal" isOpen={isErrorPopupOpened} onClose={closeAllPopups} image={error} />
+          <InfoTooltip title="Вы успешно зарегистрировались!" name="modal" isOpen={isSuccessPopupOpened} onClose={closeAllPopups} image={union} />
           <Switch>
             <Route path="/sign-up">
-              <Register infoSuccseed={openRegisterSuccessPopup} infoError={openRegisterErrorPopup} />
+              <Register handleSubmit={handleSubmitRegister} />
             </Route>
             <Route path="/sign-in">
-              <Login setLogged={setIsLogged} handleLogin={handleLogin} userEmail={userData.email}  setUserData={setUserData} />
+              <Login handleSubmit={handleSubmitLogin} setLogged={setIsLogged} handleLogin={handleLogin} userEmail={userData.email} setUserData={setUserData} />
             </Route>
             <ProtectedRoute
               path="/"

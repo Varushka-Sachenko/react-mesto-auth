@@ -1,5 +1,17 @@
 export const BASE_URL = 'https://auth.nomoreparties.co';
 
+const checkResult = (res) => {
+  if (res.ok) {
+    return res
+  }
+  // если ошибка, отклоняем промис
+  return Promise.reject(`Ошибка: ${res.status}`);
+}
+
+const changeToJson = (res) => {
+  return res.json()
+}
+
 
 export const register = (email, password) => {
     //console.log(email, password)
@@ -14,19 +26,11 @@ export const register = (email, password) => {
       }))
   })
   .then((response) => {
-    try {
-      if (response.status === 201){
-        return response.json();
-      }
-    } catch(e){
-      return (e)
-    }
+    return checkResult (response)
   })
   .then((res) => {
-    return res;
+    return (changeToJson(res))
   })
-  .catch((err) => {
-      console.log(err)});
 }; 
 
 export const authorise = (email, password) => {
@@ -40,14 +44,10 @@ export const authorise = (email, password) => {
     body: JSON.stringify({email, password})
   })
   .then((response) => {
-    try {
-      if (response.status === 200){
-        //console.log(response)
-        return response.json();
-      }
-    } catch(e){
-      return (e)
-    }
+    return (checkResult(response))
+  })
+  .then((res) => {
+    return (changeToJson(res))
   })
   .then((data) => {
     if (data.token){
@@ -58,7 +58,6 @@ export const authorise = (email, password) => {
       return;
     }
    }) 
-  .catch((err) => console.log(err));
 }; 
 
 export const getContent = (token) => {
@@ -69,12 +68,10 @@ export const getContent = (token) => {
         "Authorization" : `Bearer ${token}`
     },
   })
-  .then((res) => {
-    if (res){
-        return (res.json)
-    } else {
-        return
-    }
+  .then((response) => {
+    return (checkResult(response))
   })
-  .catch((err) => console.log(err));
+  .then((res) => {
+    return (changeToJson(res))
+  })
 }; 

@@ -1,6 +1,5 @@
 import React from 'react'
-import * as Auth from './Auth'
-import {withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
 import Header from "./Header";
 function Login(props) {
@@ -20,27 +19,13 @@ function Login(props) {
     }
 
     function handleSubmit (e){
-        e.preventDefault()
-        Auth.authorise(email, password)
-        .then((data) => {
-            if (data.token) {
-                props.setUserData({email, password})
-                setEmail('')
-                setPassword('')
-                props.handleLogin(e)
-                
-                props.history.push('/');
-            }
-
-        })
-        
-        
+        props.handleSubmit(e, email, password, setEmail, setPassword)
     }
 
     return (
 
         <>
-            <Header buttonText="Регистрация" link="/sign-up"/>
+            <Header buttonText="Регистрация" link="/sign-up" />
             <>
                 <form className={`form form_login`} name="test" onSubmit={handleSubmit}>
                     <h2 className="form__text form__text_login">Вход</h2>

@@ -24,7 +24,7 @@ class Api {
 
   getInitialCards() {
     //console.log('checkapi')
-    return fetch(this.adress, {
+    return fetch(`${this.adress}/cards`, {
       headers: {
         authorization: this._token
       }
@@ -39,7 +39,7 @@ class Api {
   }
 
   loadUserInfo() {
-    return fetch('https://nomoreparties.co/v1/cohort-24/users/me', {
+    return fetch(`${this.adress}/users/me`, {
       headers: {
         authorization: this._token
       }
@@ -57,7 +57,7 @@ class Api {
 
   editProfileINfo(data) {
     
-    return fetch('https://mesto.nomoreparties.co/v1/cohort-24/users/me', {
+    return fetch(`${this.adress}/users/me`, {
       method: 'PATCH',
       headers: {
         authorization: this._token,
@@ -78,7 +78,7 @@ class Api {
   }
 
   addNewCard(data) {
-    return fetch('https://mesto.nomoreparties.co/v1/cohort-24/cards', {
+    return fetch(`${this.adress}/cards`, {
       method: 'POST',
       headers: {
         authorization: this._token,
@@ -99,7 +99,7 @@ class Api {
   }
 
   deleteCard(cardId) {
-    return fetch(`https://mesto.nomoreparties.co/v1/cohort-24/cards/${cardId}`, {
+    return fetch(`${this.adress}/cards/${cardId}`, {
       method: 'DELETE',
       headers: {
         authorization: this._token,
@@ -119,7 +119,7 @@ class Api {
 
   likeCard(cardId) {
 
-    return fetch(`https://mesto.nomoreparties.co/v1/cohort-24/cards/likes/${cardId}`, {
+    return fetch(`${this.adress}/cards/likes/${cardId}`, {
       method: 'PUT',
       headers: {
         authorization: this._token,
@@ -135,7 +135,7 @@ class Api {
   }
 
   unlikeCard(cardId) {
-    return fetch(`https://mesto.nomoreparties.co/v1/cohort-24/cards/likes/${cardId}`, {
+    return fetch(`${this.adress}/cards/likes/${cardId}`, {
       method: 'DELETE',
       headers: {
         authorization: this._token,
@@ -167,7 +167,7 @@ class Api {
 
   changeAvatar(link) {
     //console.log(link)
-    return fetch(`https://mesto.nomoreparties.co/v1/cohort-24/users/me/avatar`, {
+    return fetch(`${this.adress}/users/me/avatar`, {
       method: 'PATCH',
       headers: {
         authorization: this._token,
@@ -189,7 +189,7 @@ class Api {
 }
 
 const classApi = new Api({
-  adress: 'https://mesto.nomoreparties.co/v1/cohort-24/cards',
+  adress: 'https://mesto.nomoreparties.co/v1/cohort-24',
   token: 'a94d4dc8-3936-43d8-a3b5-2773303eb737'
 })
 

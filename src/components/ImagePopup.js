@@ -6,10 +6,7 @@ export default function ImagePopup(props) {
 		statusOpened = "popup_opened"
 		
 	}
-	else {
-		statusOpened = ""
-		
-	}
+	
 	
 	const closePopups = props.onClose
 
