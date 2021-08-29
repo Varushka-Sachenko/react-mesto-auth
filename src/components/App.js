@@ -270,6 +270,7 @@ function App(props) {
         }
       })
       .catch((err) => {
+        setIsErrorPopupOpened(true)
         console.log(err);
       });
   }
