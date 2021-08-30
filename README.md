@@ -2,6 +2,9 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Opportunities
+This service will allow you to share the most successful shots of your life, as well as get a fitback in the form of likes from other users of the service.
+
 ## Available Scripts
 
 In the project directory, you can run:
